@@ -40,11 +40,10 @@ class Api {
       .then(this._getResponseData);
   }
 
-  // Пока НЕ нужно. Использовалось в предыдущем проекте "mesto".
-  // // Выводим информацию на страницу только если исполнились оба промиса - загрузка профиля пользователя и загрузка карточек
-  // getAllPageData() {
-  //   return Promise.all([ this.getUser(), this.getInitialCards() ]);
-  // }
+  // Выводим информацию на страницу только если исполнились оба промиса - загрузка профиля пользователя и загрузка карточек
+  getAllPageData() {
+    return Promise.all([ this.getUser(), this.getInitialCards() ]);
+  }
 
   // заменить данные пользователя (PATCH)
   setUserInfo(name, about){ //changeUserInfo

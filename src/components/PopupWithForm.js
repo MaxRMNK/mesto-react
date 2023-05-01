@@ -4,26 +4,33 @@
 // Попап редактирования имени и профессии
 // Попап добавления карточки
 // Попап подтверждения (удаления)
-function PopupWithForm(props) { // title, name, children
+function PopupWithForm({
+    isOpen,
+    onClose,
+    name,
+    title,
+    buttonText,
+    children,
+  }) {
   // console.log('PopupWithForm', props);
-
-  // console.log(props.isOpen);
-  //  ? 'popup_is-opened' : ''
 
   return (
   <>
-    <div className={`popup popup_type_${props.name} ${props.isOpen ? 'popup_is-opened' : ''}`}> {/* className="popup popup_edit-avatar" */}
+    <div className={`popup popup_type_${name} ${isOpen ? 'popup_is-opened' : ''}`}> {/* className="popup popup_edit-avatar" */}
       <div className="popup__container">
-        <button className="popup__close-button" type="button" aria-label="Закрыть" onClick={props.onClose}></button>
-        <h3 className="popup__header">{props.title}</h3>
-        <form action="#" className={`popup__form popup__form_${props.name}`} name={props.name} noValidate>
-          {props.children}
+        <button className="popup__close-button" type="button" aria-label="Закрыть" onClick={onClose}></button>
+        <h3 className="popup__header">{title}</h3>
+        <form action="#" className={`popup__form popup__form_${name}`} name={name} noValidate>
+          {children}
+          <button className="popup__button" type="submit">{buttonText}</button>
         </form>
       </div>
     </div>
 
 
-    {/* <div className="popup popup_edit-avatar">
+    {/* Это мне еще пригодится, пока не удаляю
+
+    <div className="popup popup_edit-avatar">
       <div className="popup__container">
         <button className="popup__close-button" type="button" aria-label="Закрыть"></button>
         <h3 className="popup__header">Обновить аватар</h3>
