@@ -18,15 +18,15 @@ import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 function App() {
 
-  // const defaultUserInfo = {
-  //   name: 'Жак-Ив Кусто',
-  //   about: 'Исследователь океана',
-  //   avatar: defaultAvatar,
-  // }
+  const defaultUserInfo = {
+    name: 'Жак-Ив Кусто',
+    about: 'Исследователь океана',
+    avatar: defaultAvatar,
+  }
   // Стейт данных пользователя.
   // setcurrentUser следит за состоянием "объекта", и при его изменении перезаписывает currentUser (раньше - userInfo)
-  // const [currentUser, setCurrentUser] = React.useState(defaultUserInfo);
-  const [currentUser, setCurrentUser] = React.useState({ name: 'Жак-Ив Кусто', about: 'Исследователь океана', avatar: defaultAvatar });
+  const [currentUser, setCurrentUser] = React.useState(defaultUserInfo);
+  // const [currentUser, setCurrentUser] = React.useState({ name: 'Жак-Ив Кусто', about: 'Исследователь океана', avatar: defaultAvatar });
   const [cards, setCards] = React.useState([]);
   const [selectedCard, setSelectedCard] = React.useState(null);
   const [isLoading, setIsLoading] = React.useState(false); // Стейт надписи на кнопке popup
