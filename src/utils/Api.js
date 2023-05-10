@@ -72,7 +72,7 @@ class Api {
   }
 
   // добавить карточку (POST)
-  addCardDb(data){
+  addCardInDb(data){
     return fetch(this._urlApi + '/cards', {
       method: 'POST',
       headers: this._headers,
@@ -90,12 +90,10 @@ class Api {
       .then(this._getResponseData);
   }
 
-  // “залайкать” карточку (PUT)
-  // удалить лайк карточки (DELETE)
-  setLikeCard(id, isLiked) {
-    // console.log('Api id: ', id);
-    // console.log('Api isLiked: ', isLiked);
-    if (!isLiked) {
+  // "залайкать" карточку (PUT) + удалить лайк карточки (DELETE)
+  // Раньше метод назывался "setLikeCard", были те же аргументы + изменил условие с "if (!isLiked){..." на "if (isLiked){..."
+  changeLikeCardStatus(id, isLiked) {
+    if (isLiked) {
       return fetch(`${this._urlApi}/cards/${id}/likes`, {
         method: 'PUT',
         headers: this._headers
