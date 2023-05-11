@@ -3,7 +3,7 @@ import React from 'react';
 import PopupWithForm from "./PopupWithForm";
 
 
-function ConfirmDeletePopup({ isOpen, onClose, onCardDeleteConfirm, isLoading }) {
+function ConfirmDeletePopup({ isOpen, onClose, onCardDeleteConfirm, isLoading, onOverlay }) {
 
   function handleSubmit(e) {
     // Запрещаем браузеру переходить по адресу формы
@@ -19,6 +19,8 @@ function ConfirmDeletePopup({ isOpen, onClose, onCardDeleteConfirm, isLoading })
       onClose={onClose}
       onSubmit={handleSubmit}
       buttonText={isLoading ? "Удаление..." : "Да"}
+      isLoading={isLoading}
+      onOverlay={onOverlay}
     />
   );
 }

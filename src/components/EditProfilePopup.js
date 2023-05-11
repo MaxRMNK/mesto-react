@@ -4,7 +4,7 @@ import PopupWithForm from "./PopupWithForm";
 import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 
-function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading}) {
+function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading, onOverlay}) {
 
   const currentUser = React.useContext(CurrentUserContext);
   // console.log(currentUser);
@@ -36,7 +36,6 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading}) {
     e.preventDefault();
     // Передаём значения управляемых компонентов во внешний обработчик
     onUpdateUser({
-      ...currentUser,
       name,
       about: description,
     });
@@ -53,6 +52,8 @@ function EditProfilePopup({isOpen, onClose, onUpdateUser, isLoading}) {
       onClose={onClose}
       onSubmit={handleSubmit}
       buttonText={isLoading ? "Сохранение..." : "Сохранить"}
+      isLoading={isLoading}
+      onOverlay={onOverlay}
     >
       <input
         type="text"

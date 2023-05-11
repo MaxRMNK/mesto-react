@@ -38,6 +38,56 @@ function App() {
   const [isConfirmDeletePopupOpen, setIsConfirmDeletePopupOpen] = React.useState(false);
   const [cardDelete, setCardDelete] = React.useState(null);
 
+
+  // Загрузка с сервера данных карточек и профиля пользователя
+  React.useEffect(() => {
+    api.getAllPageData()
+    .then((result) => {
+      // console.log(result);
+      const [ apiUser, apiCards ] = result;
+      setCurrentUser(apiUser);
+      setCards(apiCards);
+    })
+    .catch((err) => {
+      console.log(err); // выведем ошибку в консоль
+    });
+  }, []);
+  // Второй аргумент - [] - массив зависимостей. Если значения прописанные в этом массиве изменились,
+  // тогда этот эффект будет выполняться. Если нет - логика внутри useEffect вызываться не будет.
+
+
+  // Эффект для закрытия popup кнопкой Esc
+  React.useEffect(() => {
+    // Указывать функции внутри безопаснее:
+    // https://ru.legacy.reactjs.org/docs/hooks-faq.html#is-it-safe-to-omit-functions-from-the-list-of-dependencies
+    // У меня здесь нет ничего важного, поэтому можно было и вынести за пределы эффекта.
+    function closeOnEsc(evt) {
+      if (evt.key === 'Escape') {
+        closeAllPopups();
+      }
+    }
+
+    // Если одна из переменных true идем дальше, иначе работа эффекта останавливается до повторного запуска
+    if (!isEditAvatarPopupOpen &&
+      !isEditProfilePopupOpen &&
+      !isAddPlacePopupOpen &&
+      !selectedCard &&
+      !isConfirmDeletePopupOpen) return;
+
+    document.addEventListener('keydown', closeOnEsc);
+
+    return () => { document.removeEventListener('keydown', closeOnEsc) };
+  }, [isEditAvatarPopupOpen, isEditProfilePopupOpen, isAddPlacePopupOpen, selectedCard, isConfirmDeletePopupOpen])
+
+
+  // Обработчик оверлея
+  function handleOverlayClick(evt) {
+    if (evt.target === evt.currentTarget) {
+      closeAllPopups();
+    }
+  }
+
+
   function handleEditAvatarClick() {
     setIsEditAvatarPopupOpen(true);
     // const popupElement = document.querySelector('.popup_add-card');
@@ -63,23 +113,6 @@ function App() {
 
 
 
-  // Загрузка с сервера данных карточек и профиля пользователя
-  React.useEffect(() => {
-    api.getAllPageData()
-    .then((result) => {
-      // console.log(result);
-      const [ apiUser, apiCards ] = result;
-      setCurrentUser(apiUser);
-      setCards(apiCards);
-    })
-    .catch((err) => {
-      console.log(err); // выведем ошибку в консоль
-    });
-  }, []);
-  // Второй аргумент - [] - массив зависимостей. Если значения прописанные в этом массиве изменились,
-  // тогда этот эффект будет выполняться. Если нет - логика внутри useEffect вызываться не будет.
-
-
   function handleCardLike(card) {
     // Снова проверяем, есть ли уже лайк на этой карточке
     const isLiked = card.likes.some(i => i._id === currentUser._id);
@@ -94,27 +127,20 @@ function App() {
   }
 
 
-  // Перенес функционал в handleCardDeleteConfirm
+  // Удаление карточки: popup подтверждение удаления.
+  // Код из задания ПР11 перенес в handleCardDeleteConfirm
   function handleCardDelete(card) {
+    // console.log('111');
     setCardDelete(card);
-    // console.log('Запрос на подтверждение удаления');
     setIsConfirmDeletePopupOpen(true);
-
-    // // Было:
-    // api.deleteCard(card._id)
-    //   .then(() => {
-    //     // обновите стейт cards с помощью метода filter: создайте копию массива, исключив из него удалённую карточку
-    //     const newCards = cards.filter((item) => {
-    //       return item._id !== card._id;
-    //     });
-    //     setCards(newCards);
-    //   }).catch((err) => {
-    //     console.log(err); // выведем ошибку в консоль
-    //   });
+    // useState (setCardDelete()) - асинхронная функция. Поэтому здесь выводится обнуленное значение (null),
+    // которое было записано по-умолчанию или в handleCardDeleteConfirm
+    // console.log(cardDelete);
   }
 
   // Удаление после подтверждения
   function handleCardDeleteConfirm() {
+    // console.log('222');
     setIsLoading(true);
     api.deleteCard(cardDelete._id)
       .then(() => {
@@ -124,11 +150,14 @@ function App() {
         });
         setCards(newCards);
         setCardDelete(null);
+        closeAllPopups();
+        // см. выше:  useState (setCardDelete()) - асинхронная функция.
+        // Здесь выводится НЕобнуленное значение, записанное ранее в handleCardDelete.
+        // console.log(cardDelete);
       }).catch((err) => {
         console.log(err); // выведем ошибку в консоль
       })
       .finally(() => {
-        closeAllPopups();
         setIsLoading(false);
       });
   }
@@ -138,18 +167,17 @@ function App() {
     setIsLoading(true);
     api.setUserInfo(userInfo.name, userInfo.about)
       .then(() => {
-        setCurrentUser( userInfo );
-        // setCurrentUser({ // Изменил метод т.к. пропадала часть информации из userInfo
-        //   name: userInfo.name,
-        //   about: userInfo.about,
-        //   avatar: currentUser.avatar,
-        // });
+        setCurrentUser({
+          ...currentUser,
+          name: userInfo.name,
+          about: userInfo.about,
+        });
+        closeAllPopups();
       })
       .catch((err) => {
         console.log(err); // выведем ошибку в консоль
       })
       .finally(() => {
-        closeAllPopups();
         setIsLoading(false);
       });
   }
@@ -163,17 +191,12 @@ function App() {
           ...currentUser,
           avatar: userAvatar.avatar,
         });
-        // setCurrentUser({
-        //   name: currentUser.name,
-        //   about: currentUser.about,
-        //   avatar: userAvatar.avatar,
-        // });
+        closeAllPopups();
       })
       .catch((err) => {
         console.log(err); // выведем ошибку в консоль
       })
       .finally(() => {
-        closeAllPopups();
         setIsLoading(false);
       });
   }
@@ -184,12 +207,12 @@ function App() {
       // Затем, если предыдущая операция была успешной, обновляется информация на странице
       .then((newCard) => {
         setCards([newCard, ...cards]);
+        closeAllPopups();
       })
       .catch((err) => {
         console.log(err); // выведем ошибку в консоль
       })
       .finally(() => {
-        closeAllPopups();
         setIsLoading(false);
       });
   }
@@ -218,6 +241,7 @@ function App() {
     onClose={closeAllPopups}
     onUpdateUser={handleUpdateUser}
     isLoading={isLoading}
+    onOverlay={handleOverlayClick}
   />
 
   <EditAvatarPopup
@@ -225,6 +249,7 @@ function App() {
     onClose={closeAllPopups}
     onUpdateAvatar={handleUpdateAvatar}
     isLoading={isLoading}
+    onOverlay={handleOverlayClick}
   />
 
   <AddPlacePopup
@@ -232,6 +257,7 @@ function App() {
     onClose={closeAllPopups}
     onAddPlace={handleAddPlaceSubmit}
     isLoading={isLoading}
+    onOverlay={handleOverlayClick}
   />
 
   <ConfirmDeletePopup
@@ -240,11 +266,13 @@ function App() {
     onCardDeleteConfirm={handleCardDeleteConfirm}
     // card={card}
     isLoading={isLoading}
+    onOverlay={handleOverlayClick}
   />
 
   <ImagePopup
     card={selectedCard}
     onClose={closeAllPopups}
+    onOverlay={handleOverlayClick}
   />
 
 </CurrentUserContext.Provider>
@@ -253,3 +281,43 @@ function App() {
 }
 
 export default App;
+
+
+  // // Перенес функционал в handleCardDeleteConfirm
+  // function handleCardDelete(card) {
+  //   setCardDelete(card);
+  //   // console.log('Запрос на подтверждение удаления');
+  //   setIsConfirmDeletePopupOpen(true);
+
+  //   // // Было:
+  //   // api.deleteCard(card._id)
+  //   //   .then(() => {
+  //   //     // обновите стейт cards с помощью метода filter: создайте копию массива, исключив из него удалённую карточку
+  //   //     const newCards = cards.filter((item) => {
+  //   //       return item._id !== card._id;
+  //   //     });
+  //   //     setCards(newCards);
+  //   //   }).catch((err) => {
+  //   //     console.log(err); // выведем ошибку в консоль
+  //   //   });
+  // }
+
+  // // Удаление после подтверждения
+  // function handleCardDeleteConfirm() {
+  //   setIsLoading(true);
+  //   api.deleteCard(cardDelete._id)
+  //     .then(() => {
+  //       // обновите стейт cards с помощью метода filter: создайте копию массива, исключив из него удалённую карточку
+  //       const newCards = cards.filter((item) => {
+  //         return item._id !== cardDelete._id;
+  //       });
+  //       setCards(newCards);
+  //       setCardDelete(null);
+  //       closeAllPopups();
+  //     }).catch((err) => {
+  //       console.log(err); // выведем ошибку в консоль
+  //     })
+  //     .finally(() => {
+  //       setIsLoading(false);
+  //     });
+  // }

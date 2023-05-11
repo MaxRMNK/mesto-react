@@ -2,7 +2,7 @@
 // import defaultImage from "../images/default.jpg";
 
 // Попап картинки
-function ImagePopup({ card, onClose }) {
+function ImagePopup({ card, onClose, onOverlay }) {
 
   // console.log(onClose);
 
@@ -11,7 +11,7 @@ function ImagePopup({ card, onClose }) {
   // Если ссылка на картинку нерабочая - выводить дефолтное изображение {card ? card.link : defaultImage}
   return (
 
-    <div className={`popup popup_image ${card && 'popup_is-opened'}`}>
+    <div className={`popup popup_image ${card && 'popup_is-opened'}`} onClick={onOverlay}>
       <div className="popup__container popup__container_image">
         <button className="popup__close-button" type="button" aria-label="Закрыть" onClick={onClose}></button>
         <figure className="popup__illustration">

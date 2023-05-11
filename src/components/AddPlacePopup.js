@@ -4,7 +4,7 @@ import PopupWithForm from "./PopupWithForm";
 // import { CurrentUserContext } from "../contexts/CurrentUserContext";
 // import { useForm } from "../hooks/useForm";
 
-function AddPlacePopup({ isOpen, onClose, onAddPlace, isLoading }) { //, buttonText
+function AddPlacePopup({ isOpen, onClose, onAddPlace, isLoading, onOverlay }) { //, buttonText
   // const currentUser = React.useContext(CurrentUserContext);
 
   const [title, setTitle] = React.useState('');
@@ -43,6 +43,8 @@ function AddPlacePopup({ isOpen, onClose, onAddPlace, isLoading }) { //, buttonT
       onClose={onClose}
       onSubmit={handleSubmit}
       buttonText={isLoading ? "Сохранение..." : "Сохранить"}
+      isLoading={isLoading}
+      onOverlay={onOverlay}
     >
       <input
         type="text"

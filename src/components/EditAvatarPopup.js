@@ -4,7 +4,7 @@ import PopupWithForm from "./PopupWithForm";
 // import { CurrentUserContext } from "../contexts/CurrentUserContext";
 
 
-function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, isLoading }) {
+function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, isLoading, onOverlay }) {
 
   // const currentUser = React.useContext(CurrentUserContext);
 
@@ -33,6 +33,8 @@ function EditAvatarPopup({ isOpen, onClose, onUpdateAvatar, isLoading }) {
       onClose={onClose}
       onSubmit={handleSubmit}
       buttonText={isLoading ? "Сохранение..." : "Сохранить"}
+      isLoading={isLoading}
+      onOverlay={onOverlay}
     >
       <input
         type="url"
