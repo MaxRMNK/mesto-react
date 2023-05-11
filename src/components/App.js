@@ -80,7 +80,7 @@ function App() {
   }, [isEditAvatarPopupOpen, isEditProfilePopupOpen, isAddPlacePopupOpen, selectedCard, isConfirmDeletePopupOpen])
 
 
-  // Обработчик оверлея
+  // Обработчик клика по оверлею
   function handleOverlayClick(evt) {
     if (evt.target === evt.currentTarget) {
       closeAllPopups();
